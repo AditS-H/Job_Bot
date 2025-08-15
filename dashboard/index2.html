@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kratos' Autobot - Internship Hunter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a0a0a 50%, #0f0f0f 100%);
+        }
+        
+        .gow-title {
+            font-family: 'Cinzel', serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+        
+        .gow-card {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 1px solid #3a3a3a;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 
+                        0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+        
+        .gow-button {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #4a4a4a;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .gow-button:hover {
+            border-color: #6a6a6a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+        }
+        
+        .gow-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .gow-active {
+            background: linear-gradient(145deg, #8B0000, #654321);
+            border-color: #CD853F;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #ff6b35;
+            box-shadow: 0 0 8px #ff6b35;
+        }
+        
+        .status-inactive {
+            background: #555;
+        }
+        
+        .rune-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            font-size: 120px;
+            color: #8B4513;
+            z-index: 0;
+        }
+        
+        .main-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb {
+            background: #5a5a5a;
+            border-radius: 3px;
+        }
+        
+        .text-ember {
+            color: #ff6b35;
+        }
+        
+        .text-gold {
+            color: #CD853F;
+        }
+        
+        .border-ember {
+            border-color: #ff6b35;
+        }
+        
+        .message-notification {
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+            border: 1px solid #CD853F;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-100">
+    <!-- Subtle rune background -->
+    <div class="rune-bg">
+        <div style="position: absolute; top: 10%; left: 15%;">ᚠ</div>
+        <div style="position: absolute; top: 60%; left: 80%;">ᚱ</div>
+        <div style="position: absolute; top: 30%; left: 70%;">ᚦ</div>
+        <div style="position: absolute; bottom: 20%; left: 20%;">ᚨ</div>
+    </div>
+
+    <div class="main-content container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="gow-title text-4xl md:text-5xl font-bold text-gray-100 mb-3">
+                KRATOS AUTOBOT
+            </h1>
+            <div class="text-lg text-gray-400 mb-6">INTERNSHIP HUNTER</div>
+            <div class="text-sm text-gray-500">
+                Last Updated: <span id="last-update">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Main Status Panel -->
+        <div class="gow-card rounded-lg p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <span id="status-dot" class="status-dot status-inactive"></span>
+                    <span id="status-text" class="text-lg font-semibold text-gray-300">
+                        Warrior at Rest
+                    </span>
+                </div>
+                <div class="text-right">
+                    <div id="today-count" class="text-2xl font-bold text-ember">0</div>
+                    <div class="text-sm text-gray-500">Today</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <button id="main-action-btn" class="gow-button rounded-lg px-6 py-4 text-white font-semibold text-lg">
+                <span id="btn-icon">⚔</span> <span id="btn-text">UNLEASH KRATOS</span>
+            </button>
+            <button id="test-btn" class="gow-button rounded-lg px-6 py-4 text-white font-semibold text-lg">
+                📨 TEST MESSAGE
+            </button>
+        </div>
+
+        <!-- Message Area -->
+        <div id="message-area" class="message-notification rounded-lg p-4 mb-6 text-center font-semibold hidden">
+            <span id="message-text"></span>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="gow-card rounded-lg p-4 text-center">
+                <div id="total-count" class="text-2xl font-bold text-gray-200 mb-1">0</div>
+                <div class="text-sm text-gray-500">Total</div>
+            </div>
+            <div class="gow-card rounded-lg p-4 text-center">
+                <div id="success-count" class="text-2xl font-bold text-green-400 mb-1">0</div>
+                <div class="text-sm text-gray-500">Success</div>
+            </div>
+            <div class="gow-card rounded-lg p-4 text-center">
+                <div id="failed-count" class="text-2xl font-bold text-red-400 mb-1">0</div>
+                <div class="text-sm text-gray-500">Failed</div>
+            </div>
+            <div class="gow-card rounded-lg p-4 text-center">
+                <div id="rate-percent" class="text-2xl font-bold text-gold mb-1">0%</div>
+                <div class="text-sm text-gray-500">Rate</div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="gow-card rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gold mb-6 text-center">RECENT BATTLES</h3>
+            
+            <div id="activity-list" class="space-y-3 max-h-80 overflow-y-auto scrollbar-dark">
+                <!-- Activities will be inserted here -->
+            </div>
+            
+            <div id="no-activity" class="text-center py-12 text-gray-500">
+                <div class="text-4xl mb-4">⚰</div>
+                <div class="text-lg mb-2">No battles recorded</div>
+                <div class="text-sm">Begin the hunt to see results</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-gray-600 text-sm">
+            <div>By the will of the Gods</div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let state = {
+            running: false,
+            loading: false,
+            stats: {
+                total: 0,
+                successful: 0,
+                failed: 0,
+                today: 0,
+                recent: []
+            },
+            lastUpdate: null
+        };
+
+        // DOM elements
+        const elements = {
+            statusDot: document.getElementById('status-dot'),
+            statusText: document.getElementById('status-text'),
+            todayCount: document.getElementById('today-count'),
+            lastUpdate: document.getElementById('last-update'),
+            mainBtn: document.getElementById('main-action-btn'),
+            testBtn: document.getElementById('test-btn'),
+            btnIcon: document.getElementById('btn-icon'),
+            btnText: document.getElementById('btn-text'),
+            messageArea: document.getElementById('message-area'),
+            messageText: document.getElementById('message-text'),
+            totalCount: document.getElementById('total-count'),
+            successCount: document.getElementById('success-count'),
+            failedCount: document.getElementById('failed-count'),
+            ratePercent: document.getElementById('rate-percent'),
+            activityList: document.getElementById('activity-list'),
+            noActivity: document.getElementById('no-activity')
+        };
+
+        // Mock API calls - replace with real endpoints
+        async function fetchStatus() {
+            try {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // Mock response
+                const mockStats = {
+                    running: state.running,
+                    stats: {
+                        total: 47,
+                        successful: 32,
+                        failed: 15,
+                        today: Math.floor(Math.random() * 8) + 1,
+                        recent: [
+                            { company: "Stark Industries", position: "Software Engineering Intern", date: "Today", status: "Success" },
+                            { company: "Wayne Enterprises", position: "AI Research Intern", date: "Today", status: "Failed" },
+                            { company: "Oscorp Technologies", position: "Data Science Intern", date: "Yesterday", status: "Success" },
+                            { company: "LexCorp", position: "Cybersecurity Intern", date: "Yesterday", status: "Success" },
+                            { company: "Queen Industries", position: "Software Development Intern", date: "2 days ago", status: "Failed" }
+                        ]
+                    },
+                    timestamp: new Date().toISOString()
+                };
+                
+                state.stats = mockStats.stats;
+                state.lastUpdate = new Date();
+                updateDisplay();
+                
+            } catch (error) {
+                showMessage("Connection to Midgard failed");
+            }
+        }
+
+        async function startBot() {
+            if (state.loading) return;
+            
+            state.loading = true;
+            showMessage("Awakening the warrior...");
+            updateButtons();
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                state.running = true;
+                showMessage("Kratos begins the hunt");
+                setTimeout(fetchStatus, 1000);
+            } catch (error) {
+                showMessage("The gods refuse our call");
+            } finally {
+                state.loading = false;
+                updateButtons();
+            }
+        }
+
+        async function stopBot() {
+            if (state.loading) return;
+            
+            state.loading = true;
+            showMessage("Calling the warrior home...");
+            updateButtons();
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                state.running = false;
+                showMessage("Kratos returns to rest");
+                setTimeout(fetchStatus, 1000);
+            } catch (error) {
+                showMessage("The warrior does not hear us");
+            } finally {
+                state.loading = false;
+                updateButtons();
+            }
+        }
+
+        async function testMessage() {
+            if (state.loading) return;
+            
+            state.loading = true;
+            showMessage("Sending test message...");
+            updateButtons();
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                showMessage("Message delivered successfully");
+            } catch (error) {
+                showMessage("Message failed to send");
+            } finally {
+                state.loading = false;
+                updateButtons();
+            }
+        }
+
+        function showMessage(text) {
+            elements.messageText.textContent = text;
+            elements.messageArea.classList.remove('hidden');
+            
+            setTimeout(() => {
+                elements.messageArea.classList.add('hidden');
+            }, 4000);
+        }
+
+        function updateDisplay() {
+            updateStatus();
+            updateStats();
+            updateActivity();
+            updateTimestamp();
+        }
+
+        function updateStatus() {
+            if (state.running) {
+                elements.statusDot.className = 'status-dot status-active';
+                elements.statusText.textContent = 'Hunting in Progress';
+                elements.statusText.className = 'text-lg font-semibold text-ember';
+            } else {
+                elements.statusDot.className = 'status-dot status-inactive';
+                elements.statusText.textContent = 'Warrior at Rest';
+                elements.statusText.className = 'text-lg font-semibold text-gray-300';
+            }
+            
+            elements.todayCount.textContent = state.stats.today;
+        }
+
+        function updateButtons() {
+            if (state.loading) {
+                elements.mainBtn.disabled = true;
+                elements.testBtn.disabled = true;
+                elements.mainBtn.style.opacity = '0.6';
+                elements.testBtn.style.opacity = '0.6';
+                elements.btnText.textContent = 'WORKING...';
+            } else {
+                elements.mainBtn.disabled = false;
+                elements.testBtn.disabled = false;
+                elements.mainBtn.style.opacity = '1';
+                elements.testBtn.style.opacity = '1';
+                
+                if (state.running) {
+                    elements.mainBtn.classList.add('gow-active');
+                    elements.btnIcon.textContent = '🛡';
+                    elements.btnText.textContent = 'RECALL KRATOS';
+                } else {
+                    elements.mainBtn.classList.remove('gow-active');
+                    elements.btnIcon.textContent = '⚔';
+                    elements.btnText.textContent = 'UNLEASH KRATOS';
+                }
+            }
+        }
+
+        function updateStats() {
+            elements.totalCount.textContent = state.stats.total;
+            elements.successCount.textContent = state.stats.successful;
+            elements.failedCount.textContent = state.stats.failed;
+            
+            const rate = state.stats.total > 0 ? 
+                Math.round((state.stats.successful / state.stats.total) * 100) : 0;
+            elements.ratePercent.textContent = `${rate}%`;
+        }
+
+        function updateActivity() {
+            if (state.stats.recent.length > 0) {
+                elements.noActivity.style.display = 'none';
+                elements.activityList.innerHTML = '';
+                
+                state.stats.recent.forEach(activity => {
+                    const item = document.createElement('div');
+                    item.className = 'gow-card rounded p-4 border-l-4 ' + 
+                        (activity.status === 'Success' ? 'border-green-500' : 'border-red-500');
+                    
+                    item.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-200 mb-1">${activity.company}</div>
+                                <div class="text-sm text-gray-400 mb-1">${activity.position}</div>
+                                <div class="text-xs text-gray-500">${activity.date}</div>
+                            </div>
+                            <div class="text-sm font-semibold px-2 py-1 rounded ${
+                                activity.status === 'Success' ? 'text-green-400' : 'text-red-400'
+                            }">
+                                ${activity.status === 'Success' ? 'Victory' : 'Defeat'}
+                            </div>
+                        </div>
+                    `;
+                    
+                    elements.activityList.appendChild(item);
+                });
+            } else {
+                elements.noActivity.style.display = 'block';
+            }
+        }
+
+        function updateTimestamp() {
+            if (state.lastUpdate) {
+                elements.lastUpdate.textContent = state.lastUpdate.toLocaleTimeString();
+            }
+        }
+
+        // Event listeners
+        elements.mainBtn.addEventListener('click', () => {
+            if (state.running) {
+                stopBot();
+            } else {
+                startBot();
+            }
+        });
+
+        elements.testBtn.addEventListener('click', testMessage);
+
+        // Initialize
+        function init() {
+            fetchStatus();
+            updateButtons();
+            
+            // Auto-refresh every 15 seconds
+            setInterval(fetchStatus, 15000);
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>

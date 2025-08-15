@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kratos' Autobot - Internship Hunter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Cinzel', serif;
+        }
+        
+        .runic-text {
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+        
+        .bg-clip-text {
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: #ef4444 #374151;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #374151;
+            border-radius: 3px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #ef4444;
+            border-radius: 3px;
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .hover-glow:hover {
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black text-white overflow-hidden relative">
+    <!-- Animated background runes -->
+    <div id="runic-background" class="absolute inset-0 overflow-hidden opacity-10">
+        <!-- Runes will be dynamically inserted here -->
+    </div>
+
+    <!-- Main container -->
+    <div class="relative z-10 container mx-auto px-4 py-6 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-400 to-orange-300 bg-clip-text text-transparent mb-2 animate-float">
+                KRATOS' AUTOBOT
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 font-semibold">
+                ⚔️ INTERNSHIP HUNTER ⚔️
+            </p>
+            <div class="mt-4 text-sm text-gray-400">
+                Last Update: <span id="last-update">Unknown</span>
+            </div>
+        </div>
+
+        <!-- Status indicator -->
+        <div id="status-container" class="w-full rounded-lg bg-gradient-to-r from-gray-600 to-gray-500 p-6 mb-6 shadow-2xl border border-red-800 glass-effect hover-glow transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div id="status-indicator" class="w-4 h-4 rounded-full bg-gray-400"></div>
+                    <span id="status-text" class="text-xl font-semibold">
+                        💤 WARRIOR AT REST
+                    </span>
+                </div>
+                <div class="text-right">
+                    <div id="today-count" class="text-2xl font-bold">0</div>
+                    <div class="text-sm opacity-75">Today's Conquests</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <button
+                id="main-action-btn"
+                class="py-4 px-6 rounded-lg font-bold text-xl transition-all duration-300 transform bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 hover:scale-105 shadow-lg hover:shadow-xl border-2 border-yellow-600 hover-glow"
+            >
+                ⚔️ UNLEASH KRATOS
+            </button>
+            
+            <button
+                id="test-whatsapp-btn"
+                class="py-4 px-6 rounded-lg font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-yellow-600 hover-glow"
+            >
+                🐦 TEST RAVEN MESSAGE
+            </button>
+        </div>
+
+        <!-- Message display -->
+        <div id="message-container" class="bg-gradient-to-r from-yellow-600 to-orange-600 text-black p-4 rounded-lg mb-6 font-semibold text-center animate-pulse shadow-lg hidden">
+            <span id="message-text"></span>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg text-center border border-red-800 shadow-lg glass-effect hover-glow transition-all duration-300">
+                <div id="total-battles" class="text-3xl font-bold text-blue-400">0</div>
+                <div class="text-sm text-gray-300">Total Battles</div>
+            </div>
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg text-center border border-red-800 shadow-lg glass-effect hover-glow transition-all duration-300">
+                <div id="victories" class="text-3xl font-bold text-green-400">0</div>
+                <div class="text-sm text-gray-300">Victories</div>
+            </div>
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg text-center border border-red-800 shadow-lg glass-effect hover-glow transition-all duration-300">
+                <div id="defeats" class="text-3xl font-bold text-red-400">0</div>
+                <div class="text-sm text-gray-300">Defeats</div>
+            </div>
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg text-center border border-red-800 shadow-lg glass-effect hover-glow transition-all duration-300">
+                <div id="success-rate" class="text-3xl font-bold text-yellow-400">0%</div>
+                <div class="text-sm text-gray-300">Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Recent applications -->
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-red-800 shadow-2xl glass-effect">
+            <h3 class="text-2xl font-bold mb-4 text-center text-yellow-400">
+                🏆 RECENT CONQUESTS
+            </h3>
+            
+            <div id="recent-applications" class="space-y-3 max-h-96 overflow-y-auto scrollbar-thin">
+                <!-- Recent applications will be dynamically inserted here -->
+            </div>
+            
+            <div id="no-battles" class="text-center text-gray-400 py-8">
+                <div class="text-6xl mb-4">⚰️</div>
+                <div>No battles have been fought yet...</div>
+                <div class="text-sm mt-2">Unleash Kratos to begin the hunt!</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-gray-500 text-sm">
+            <p>Powered by the rage of Kratos and the wisdom of Mimir</p>
+            <p class="mt-2">⚡ Built for mobile warriors ⚡</p>
+        </div>
+    </div>
+
+    <script>
+        // Runic symbols for decoration
+        const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ'];
+        
+        // Application state
+        let appState = {
+            status: {
+                running: false,
+                stats: {
+                    total: 0,
+                    successful: 0,
+                    failed: 0,
+                    today: 0,
+                    recent: []
+                }
+            },
+            loading: false,
+            lastUpdate: null,
+            runicAnimation: 0
+        };
+
+        // DOM elements
+        const elements = {
+            statusContainer: document.getElementById('status-container'),
+            statusIndicator: document.getElementById('status-indicator'),
+            statusText: document.getElementById('status-text'),
+            todayCount: document.getElementById('today-count'),
+            lastUpdate: document.getElementById('last-update'),
+            mainActionBtn: document.getElementById('main-action-btn'),
+            testWhatsAppBtn: document.getElementById('test-whatsapp-btn'),
+            messageContainer: document.getElementById('message-container'),
+            messageText: document.getElementById('message-text'),
+            totalBattles: document.getElementById('total-battles'),
+            victories: document.getElementById('victories'),
+            defeats: document.getElementById('defeats'),
+            successRate: document.getElementById('success-rate'),
+            recentApplications: document.getElementById('recent-applications'),
+            noBattles: document.getElementById('no-battles'),
+            runicBackground: document.getElementById('runic-background')
+        };
+
+        // Initialize runic background
+        function initRunicBackground() {
+            RUNES.forEach((rune, index) => {
+                const runeElement = document.createElement('div');
+                runeElement.className = 'absolute text-6xl font-bold runic-text transform transition-all duration-2000 text-gray-600';
+                runeElement.textContent = rune;
+                runeElement.style.left = `${(index * 12) % 100}%`;
+                runeElement.style.top = `${(index * 17) % 100}%`;
+                runeElement.style.animationDelay = `${index * 0.5}s`;
+                elements.runicBackground.appendChild(runeElement);
+            });
+        }
+
+        // Animate runes
+        function animateRunes() {
+            const runeElements = elements.runicBackground.children;
+            Array.from(runeElements).forEach((element, index) => {
+                if (index === appState.runicAnimation) {
+                    element.className = element.className.replace('text-gray-600', 'text-red-400 scale-125');
+                } else {
+                    element.className = element.className.replace('text-red-400 scale-125', 'text-gray-600');
+                }
+            });
+            appState.runicAnimation = (appState.runicAnimation + 1) % RUNES.length;
+        }
+
+        // Fetch status from API (mock function)
+        async function fetchStatus() {
+            try {
+                // Mock API response - replace with actual API call
+                const mockData = {
+                    running: appState.status.running,
+                    stats: {
+                        total: Math.floor(Math.random() * 50) + appState.status.stats.total,
+                        successful: Math.floor(Math.random() * 30) + appState.status.stats.successful,
+                        failed: Math.floor(Math.random() * 10) + appState.status.stats.failed,
+                        today: Math.floor(Math.random() * 10),
+                        recent: [
+                            {
+                                company: "Stark Industries",
+                                position: "Software Engineering Intern",
+                                date: new Date().toLocaleDateString(),
+                                status: "Sent"
+                            },
+                            {
+                                company: "Wayne Enterprises",
+                                position: "AI Research Intern",
+                                date: new Date().toLocaleDateString(),
+                                status: "Failed"
+                            },
+                            {
+                                company: "Oscorp",
+                                position: "Data Science Intern",
+                                date: new Date().toLocaleDateString(),
+                                status: "Sent"
+                            }
+                        ]
+                    },
+                    timestamp: new Date().toISOString()
+                };
+                
+                appState.status = mockData;
+                appState.lastUpdate = new Date(mockData.timestamp);
+                updateUI();
+            } catch (error) {
+                console.error('Failed to fetch status:', error);
+                showMessage('Failed to communicate with Midgard...');
+            }
+        }
+
+        // Start autobot
+        async function startAutobot() {
+            if (appState.loading) return;
+            
+            appState.loading = true;
+            showMessage('Awakening Kratos...');
+            updateButtons();
+            
+            try {
+                // Mock API call - replace with actual API
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                appState.status.running = true;
+                showMessage('Kratos has been unleashed! The hunt begins...');
+                setTimeout(fetchStatus, 2000);
+            } catch (error) {
+                showMessage('The gods have forsaken us...');
+            } finally {
+                appState.loading = false;
+                updateButtons();
+            }
+        }
+
+        // Stop autobot
+        async function stopAutobot() {
+            if (appState.loading) return;
+            
+            appState.loading = true;
+            showMessage('Calling Kratos back to Midgard...');
+            updateButtons();
+            
+            try {
+                // Mock API call - replace with actual API
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                appState.status.running = false;
+                showMessage('Kratos returns to rest...');
+                setTimeout(fetchStatus, 2000);
+            } catch (error) {
+                showMessage('Unable to reach the warrior...');
+            } finally {
+                appState.loading = false;
+                updateButtons();
+            }
+        }
+
+        // Test WhatsApp
+        async function testWhatsApp() {
+            if (appState.loading) return;
+            
+            appState.loading = true;
+            showMessage('Sending raven message...');
+            updateButtons();
+            
+            try {
+                // Mock API call - replace with actual API
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                showMessage('Raven message delivered successfully! 🐦');
+            } catch (error) {
+                showMessage('The ravens are silent...');
+            } finally {
+                appState.loading = false;
+                updateButtons();
+            }
+        }
+
+        // Show message
+        function showMessage(message) {
+            elements.messageText.textContent = message;
+            elements.messageContainer.classList.remove('hidden');
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                elements.messageContainer.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Update UI
+        function updateUI() {
+            updateStatus();
+            updateStats();
+            updateRecentApplications();
+            updateLastUpdate();
+        }
+
+        // Update status
+        function updateStatus() {
+            if (appState.status.running) {
+                elements.statusContainer.className = elements.statusContainer.className.replace(
+                    'from-gray-600 to-gray-500',
+                    'from-red-600 to-orange-500'
+                );
+                elements.statusIndicator.className = 'w-4 h-4 rounded-full bg-green-400 animate-pulse';
+                elements.statusText.textContent = '🔥 HUNTING IN PROGRESS';
+            } else {
+                elements.statusContainer.className = elements.statusContainer.className.replace(
+                    'from-red-600 to-orange-500',
+                    'from-gray-600 to-gray-500'
+                );
+                elements.statusIndicator.className = 'w-4 h-4 rounded-full bg-gray-400';
+                elements.statusText.textContent = '💤 WARRIOR AT REST';
+            }
+            
+            elements.todayCount.textContent = appState.status.stats.today;
+        }
+
+        // Update buttons
+        function updateButtons() {
+            const mainBtn = elements.mainActionBtn;
+            const testBtn = elements.testWhatsAppBtn;
+            
+            if (appState.loading) {
+                mainBtn.textContent = 'Communing with the Gods...';
+                mainBtn.disabled = true;
+                testBtn.disabled = true;
+                mainBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                testBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                mainBtn.disabled = false;
+                testBtn.disabled = false;
+                mainBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                testBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                if (appState.status.running) {
+                    mainBtn.textContent = '🛡️ RECALL KRATOS';
+                    mainBtn.className = mainBtn.className.replace(
+                        'from-green-600 to-green-800 hover:from-green-700 hover:to-green-900',
+                        'from-red-600 to-red-800 hover:from-red-700 hover:to-red-900'
+                    );
+                } else {
+                    mainBtn.textContent = '⚔️ UNLEASH KRATOS';
+                    mainBtn.className = mainBtn.className.replace(
+                        'from-red-600 to-red-800 hover:from-red-700 hover:to-red-900',
+                        'from-green-600 to-green-800 hover:from-green-700 hover:to-green-900'
+                    );
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const stats = appState.status.stats;
+            elements.totalBattles.textContent = stats.total;
+            elements.victories.textContent = stats.successful;
+            elements.defeats.textContent = stats.failed;
+            
+            const successRate = stats.total > 0 ? Math.round((stats.successful / stats.total) * 100) : 0;
+            elements.successRate.textContent = `${successRate}%`;
+        }
+
+        // Update recent applications
+        function updateRecentApplications() {
+            const recent = appState.status.stats.recent;
+            
+            if (recent.length > 0) {
+                elements.noBattles.style.display = 'none';
+                elements.recentApplications.innerHTML = '';
+                
+                recent.forEach((app, index) => {
+                    const appElement = document.createElement('div');
+                    appElement.className = 'bg-gradient-to-r from-gray-700 to-gray-800 p-4 rounded-lg border-l-4 border-yellow-600 hover-glow transition-all duration-300';
+                    
+                    appElement.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-semibold text-white text-lg">${app.company}</div>
+                                <div class="text-gray-300">${app.position}</div>
+                                <div class="text-sm text-gray-400 mt-1">${app.date}</div>
+                            </div>
+                            <div class="px-3 py-1 rounded-full text-sm font-semibold ${
+                                app.status === 'Sent' 
+                                    ? 'bg-green-600 text-white' 
+                                    : 'bg-red-600 text-white'
+                            }">
+                                ${app.status === 'Sent' ? '⚔️ Victory' : '💀 Defeat'}
+                            </div>
+                        </div>
+                    `;
+                    
+                    elements.recentApplications.appendChild(appElement);
+                });
+            } else {
+                elements.noBattles.style.display = 'block';
+            }
+        }
+
+        // Update last update time
+        function updateLastUpdate() {
+            if (appState.lastUpdate) {
+                elements.lastUpdate.textContent = appState.lastUpdate.toLocaleTimeString();
+            }
+        }
+
+        // Event listeners
+        elements.mainActionBtn.addEventListener('click', () => {
+            if (appState.status.running) {
+                stopAutobot();
+            } else {
+                startAutobot();
+            }
+        });
+
+        elements.testWhatsAppBtn.addEventListener('click', testWhatsApp);
+
+        // Initialize
+        function init() {
+            initRunicBackground();
+            fetchStatus();
+            
+            // Auto-refresh every 10 seconds
+            setInterval(fetchStatus, 10000);
+            
+            // Animate runes every 2 seconds
+            setInterval(animateRunes, 2000);
+            
+            updateButtons();
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
