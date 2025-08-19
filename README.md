@@ -342,7 +342,7 @@ isort src/
 
 - **Issues**: [GitHub Issues](https://github.com/yourusername/kratos-autobot/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/kratos-autobot/discussions)
-- **Email**: your-email@domain.com
+- **Email**: workadit2@gmail.com
 
 ## 📜 License
 
